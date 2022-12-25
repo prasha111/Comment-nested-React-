@@ -40,37 +40,51 @@ export default function WidgetPage() {
       ],
     },
   ]);
+
+
   useEffect(() => {
-    window.localStorage.setItem('count', discussionData);
-    console.log("heello set")
-  }, [discussionData])
+    setTimeout(()=>{
+        window.localStorage.clear("count");
+        window.localStorage.setItem("count", JSON.stringify(discussionData));
+        console.log("heello set");
+    },10)
+
+  }, [discussionData]);
   useEffect(() => {
-        setDiscussionData(JSON.parse(window.localStorage.getItem('count')));
-        console.log("heello get")
-   
+    // const name = async()=>{
+    //     const data = window.localStorage.getItem('count');
+    //   if ( data !== null ) {setDiscussionData(JSON.parse(data))}
+    //     console.log("heello get")
+    //   }
+    //setDiscussionData(JSON.parse(window.localStorage.getItem('count')));
+    const data = window.localStorage.getItem("count");
+    if (data !== null) setDiscussionData(JSON.parse(data));
+    console.log("heello get");
   }, []);
 
-  const replyConcat = (parentId, repyText) =>{
-    console.log(repyText, "text recieve")
-    let deepClone = JSON.parse(JSON.stringify(discussionData))
+  const replyConcat = (parentId, repyText) => {
+    console.log(repyText, "text recieve");
+    let deepClone = JSON.parse(JSON.stringify(discussionData));
 
-        for(let i = 0; i<deepClone.length; i++){
-            if(deepClone[i].id === parentId){
-                deepClone[i].reply.push({
-                    name: "cluless2",
-                    time: "5",
-                    power: "author2",
-                    data: repyText,
-                    reply: "",
-                  })
-            }       
-        }
-    setDiscussionData(deepClone)
-  }
+    for (let i = 0; i < deepClone.length; i++) {
+      if (deepClone[i].id === parentId) {
+        deepClone[i].reply.push({
+          name: "cluless2",
+          time: "5",
+          power: "author2",
+          data: repyText,
+          reply: "",
+          id: JSON.stringify(Date.now()),
+        });
+      }
+    }
+    setDiscussionData(deepClone);
+  };
   function addHandleClick(props) {
     const deepClone = JSON.parse(JSON.stringify(discussionData));
     deepClone.push({
       name: "cluless2",
+      id:JSON.stringify(Date.now()),
       time: "5",
       power: "author2",
       data: inputData,
@@ -81,7 +95,7 @@ export default function WidgetPage() {
   }
   function addReply(commentId, replyText) {
     let commentsWithNewReply = [...discussionData];
-    console.log(commentsWithNewReply, 'dded')
+    console.log(commentsWithNewReply, "dded");
     insertComment(commentsWithNewReply, commentId, replyText);
     setDiscussionData(commentsWithNewReply);
   }
@@ -93,6 +107,15 @@ export default function WidgetPage() {
       time: "4",
       children: [],
     };
+  }
+  function deleteComment(id){
+    const deepClone1 = JSON.parse(JSON.stringify(discussionData));
+    for(let i =0;i<deepClone1.length; i++){
+        if(deepClone1[i].id === id){
+            deepClone1.splice(i,1)
+        }
+    }
+    setDiscussionData(deepClone1);
   }
   function insertComment(comments, parentId, text) {
     for (let i = 0; i < comments?.length; i++) {
@@ -108,12 +131,17 @@ export default function WidgetPage() {
     }
   }
   return (
-    <div style={{display:'flex', flexDirection:'column', rowGap:'20px'}}>
+    <div style={{ display: "flex", flexDirection: "column", rowGap: "20px" }}>
       <Widget />
       {discussionData.map((component, index) => {
         return (
           <div key={index}>
-            <CommentsRendering data={component}  addReply={addReply} replyConcat={replyConcat} />
+            <CommentsRendering
+              data={component}
+              addReply={addReply}
+              replyConcat={replyConcat}
+              deleteComment={deleteComment}
+            />
           </div>
         );
       })}

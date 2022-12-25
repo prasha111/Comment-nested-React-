@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import ReplyRendering from "./replyRendering";
 
 export default function CommentsRendering(prop) {
-  let { data, addReply, replyConcat } = prop;
+  let { data, addReply, replyConcat, deleteComment } = prop;
   const [replyText, setReplyText] = useState("");
   const inputEl = useRef(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -63,7 +63,7 @@ export default function CommentsRendering(prop) {
               >
                 reply
               </div>
-              <div>Close</div>
+              <div onClick={()=>{deleteComment(data.id)}}>delete</div>
             </div>
           </div>
         </div>
